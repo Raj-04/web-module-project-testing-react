@@ -1,3 +1,56 @@
+import React from 'react';
+import Display from '../Display';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+
+const testShow = {
+    name: 'Stranger Things',
+    summary: 'A love letter to the 80s classics that captivated a generation, Stranger Things is set in 1983 Indiana, where a young boy vanishes into thin air. As friends, family and local police search for answers, they are drawn into an extraordinary mystery involving top-secret government experiments, terrifying supernatural forces and one very strange little girl.',
+    seasons: [
+        {id:0, name: "Season 1", episodes: []},
+        {id:1, name: "Season 2", episodes: []},
+        {id:2, name: "Season 3", episodes: []},
+        {id:3, name: "Season 4", episodes: []},
+    ]
+}
+
+test('Display component renders without any props passed in', () => {
+    render(<Display />)
+    const display = screen.queryByText(/press to get show data/i)
+    expect(display).toBeInTheDocument()
+})
+
+test('when fetch button is pressed show component with display', async () => {
+    render(<Display show = {testShow}/>)
+    const button = screen.queryByRole('button')
+    userEvent.click(button)
+    await waitFor(() => {
+        const show = screen.queryAllByTestId('show-container')
+        expect(show).toBeTruthy()
+    })
+})
+
+test('when fetch button is pressed the amount of select options render is equal to the amout of seasons', async () => {
+    render(<Display show = {testShow}/>)
+    const button = screen.queryByRole('button')
+    userEvent.click(button)
+    await waitFor(() => {
+        const show = screen.queryAllByTestId('show-container')
+        expect(show).toHaveLength(1)
+    })
+})
+
+test('test if optional function is being called', async () => {
+    const mockClick = jest.fn();
+
+render(<Display handleClick = {mockClick}/>);
+    const button = screen.getByRole('button');
+    userEvent.click(button);
+    await waitFor(() => { 
+        expect(mockClick).toHaveBeenCalledTimes(0)
+    });
+})
+
 
 
 
